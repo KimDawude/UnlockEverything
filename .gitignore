@@ -1,41 +1,212 @@
-# Compiled Lua sources
-luac.out
+-- LIBRARY  
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()  
 
-# luarocks build files
-*.src.rock
-*.zip
-*.tar.gz
+-- SERVICES  
+local Players = game:GetService("Players")  
+local RunService = game:GetService("RunService")  
+local Lighting = game:GetService("Lighting")  
+local LocalPlayer = Players.LocalPlayer  
 
-# Object files
-*.o
-*.os
-*.ko
-*.obj
-*.elf
+-- WINDOW  
+local Window = Rayfield:CreateWindow({  
+   Name = "Kim_Dawude + (ULTRA PREMIUM)",  
+   Icon = 0,  
+   LoadingTitle = "Boys & Girls HighSchool RP 2026",  
+   LoadingSubtitle = "VERSION 1 by 5DUO",  
+   ShowText = "AquaModz",  
+   Theme = "Amethyst",  
+   ToggleUIKeybind = "K",  
 
-# Precompiled Headers
-*.gch
-*.pch
+   ConfigurationSaving = {  
+      Enabled = true,  
+      FileName = "Big Hub"  
+   },  
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
+   KeySystem = false
+})  
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+Rayfield:Notify({  
+   Title = "AquaModz",  
+   Content = "Welcome!",  
+   Duration = 6.5,  
+   Image = 4483362458,  
+})  
 
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
+-------------------------------------------------  
+-- PLAYER TAB  
+-------------------------------------------------  
+local PlayerTab = Window:CreateTab("Player", 104575428877547)  
+PlayerTab:CreateSection("Main")  
 
+-- WalkSpeed Toggle  
+local WalkspeedConnection  
+PlayerTab:CreateToggle({  
+	Name = "Loop WalkSpeed (21)",  
+	CurrentValue = false,  
+	Callback = function(state)  
+		if state then  
+			WalkspeedConnection = RunService.Heartbeat:Connect(function()  
+				local char = LocalPlayer.Character  
+				if char then  
+					local hum = char:FindFirstChildOfClass("Humanoid")  
+					if hum then hum.WalkSpeed = 21 end  
+				end  
+			end)  
+		else  
+			if WalkspeedConnection then  
+				WalkspeedConnection:Disconnect()  
+				WalkspeedConnection = nil  
+			end  
+		end  
+	end  
+})  
+
+-- Infinite Yield  
+PlayerTab:CreateButton({  
+	Name = "Infinite Yield (Admin)",  
+	Callback = function()  
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()  
+	end  
+})  
+
+-- FullBright Toggle  
+PlayerTab:CreateToggle({  
+	Name = "FullBright",  
+	CurrentValue = false,  
+	Callback = function(state)  
+		if state then  
+			Lighting.Brightness = 2  
+			Lighting.ClockTime = 14  
+			Lighting.FogEnd = 100000  
+			Lighting.GlobalShadows = false  
+		end  
+	end  
+})  
+
+-------------------------------------------------  
+-- MAIN TAB  
+-------------------------------------------------  
+local MainTab = Window:CreateTab("Main", 104575428877547)  
+MainTab:CreateSection("Admin Combat")  
+
+local HitboxEnabled = false  
+local HitboxSize = 0  
+local HitboxConnection  
+local DEFAULT_HRP_SIZE = Vector3.new(2,2,1)  
+
+local function ApplyHitboxes()  
+	for _, plr in ipairs(Players:GetPlayers()) do  
+		if plr ~= LocalPlayer and plr.Character then  
+			local hrp = plr.Character:FindFirstChild("HumanoidRootPart")  
+			if hrp then  
+				hrp.Size = DEFAULT_HRP_SIZE + Vector3.new(HitboxSize, HitboxSize, HitboxSize)  
+				hrp.Transparency = 0.7  
+				hrp.Material = Enum.Material.Neon  
+				hrp.CanCollide = false  
+			end  
+		end  
+	end  
+end  
+
+local function ResetHitboxes()  
+	for _, plr in ipairs(Players:GetPlayers()) do  
+		if plr.Character then  
+			local hrp = plr.Character:FindFirstChild("HumanoidRootPart")  
+			if hrp then  
+				hrp.Size = DEFAULT_HRP_SIZE  
+				hrp.Transparency = 1  
+				hrp.Material = Enum.Material.Plastic  
+			end  
+		end  
+	end  
+end  
+
+MainTab:CreateToggle({  
+	Name = "Hitbox System (Admin)",  
+	CurrentValue = false,  
+	Callback = function(state)  
+		HitboxEnabled = state  
+		if state then  
+			HitboxConnection = RunService.Heartbeat:Connect(ApplyHitboxes)  
+		else  
+			if HitboxConnection then  
+				HitboxConnection:Disconnect()  
+				HitboxConnection = nil  
+			end  
+			ResetHitboxes()  
+		end  
+	end  
+})  
+
+MainTab:CreateSlider({  
+	Name = "Hitbox Size (0 - 10)",  
+	Range = {0,10},  
+	Increment = 1,  
+	Suffix = "Scale",  
+	CurrentValue = 0,  
+	Callback = function(value)  
+		HitboxSize = value  
+	end  
+})  
+
+-------------------------------------------------  
+-- COMBAT TAB  
+-------------------------------------------------  
+local CombatTab = Window:CreateTab("Combat", 104575428877547)  
+
+CombatTab:CreateButton({  
+	Name = "Enable Fighting",  
+	Callback = function()  
+		LocalPlayer:SetAttribute("Fighting", true)  
+	end  
+})  
+
+CombatTab:CreateButton({  
+	Name = "Disable Fighting",  
+	Callback = function()  
+		LocalPlayer:SetAttribute("Fighting", false)  
+	end  
+})  
+
+-------------------------------------------------  
+-- FIGHTING STYLES TAB  
+-------------------------------------------------  
+local StyleTab = Window:CreateTab("Fighting Styles", 104575428877547)  
+StyleTab:CreateSection("Styles")  
+
+local function setStyle(style)  
+	LocalPlayer:SetAttribute("FightingStyle", style)  
+end  
+
+local styles = {  
+	"Default","Leg Kick","Ultra Goku","Naruto",  
+	"Luffy","Spiked Purse","Headless Horseman",  
+	"Gojo","Midnight Blade"  
+}  
+
+for _, style in ipairs(styles) do  
+	StyleTab:CreateButton({  
+		Name = style,  
+		Callback = function()  
+			setStyle(style)  
+		end  
+	})  
+end  
+
+StyleTab:CreateToggle({  
+	Name = "Cycle Styles (Loop)",  
+	CurrentValue = false,  
+	Callback = function(state)  
+		if state then  
+			task.spawn(function()  
+				while state do  
+					for _, style in ipairs(styles) do  
+						if not state then break end  
+						setStyle(style)  
+						task.wait(1)  
+					end  
+				end  
+			end)  
+		end  
+	end  
+})  
