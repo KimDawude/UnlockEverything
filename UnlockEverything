@@ -10,7 +10,7 @@ local LocalPlayer = Players.LocalPlayer
 -- WINDOW  
 local Window = Rayfield:CreateWindow({  
    Name = "Kim_Dawude + (ULTRA PREMIUM)",  
-   Icon = 0,  
+   Icon = 102621558434211,  
    LoadingTitle = "Boys & Girls HighSchool RP 2026",  
    LoadingSubtitle = "VERSION 1 by 5DUO",  
    ShowText = "AquaModz",  
